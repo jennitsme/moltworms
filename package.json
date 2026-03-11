@@ -28,6 +28,10 @@
     "eslint": "^9.11.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
+    "ts-node": "^10.9.2",
     "typescript-eslint": "^8.10.0"
+  },
+  "prisma": {
+    "seed": "node --loader ts-node/esm services/api/prisma/seed.ts"
   }
 }
