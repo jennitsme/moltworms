@@ -5,6 +5,7 @@ import { createExpressMiddleware } from "@trpc/server-adapters-express";
 import { z } from "zod";
 import { loadConfig } from "./config.js";
 import { prisma } from "./db.js";
+import { fetchChannelQueue } from "./queues.js";
 
 const config = loadConfig();
 
@@ -18,6 +19,12 @@ const appRouter = t.router({
     const users = await prisma.user.findMany({ take: 5 });
     return users;
   }),
+  enqueueFetch: t.procedure
+    .input(z.object({ channelId: z.string() }))
+    .mutation(async ({ input }) => {
+      await fetchChannelQueue.add("fetch", { channelId: input.channelId });
+      return { enqueued: true } as const;
+    }),
 });
 export type AppRouter = typeof appRouter;
 

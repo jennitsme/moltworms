@@ -11,3 +11,12 @@ export const EnvSchema = z.object({
   redisUrl: z.string().url(),
 });
 export type EnvConfig = z.infer<typeof EnvSchema>;
+
+export const FetchChannelJob = z.object({ channelId: z.string() });
+export type FetchChannelJob = z.infer<typeof FetchChannelJob>;
+
+export const ProcessMessageJob = z.object({ messageId: z.string() });
+export type ProcessMessageJob = z.infer<typeof ProcessMessageJob>;
+
+export const ExecuteActionJob = z.object({ actionId: z.string() });
+export type ExecuteActionJob = z.infer<typeof ExecuteActionJob>;

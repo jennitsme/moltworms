@@ -13,8 +13,10 @@
     "@trpc/server": "^11.0.0-rc.360",
     "@trpc/server-adapters": "^11.0.0-rc.360",
     "@trpc/server-adapters-express": "^11.0.0-rc.360",
+    "bullmq": "^5.21.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "ioredis": "^5.4.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
