@@ -1,0 +1,15 @@
+{
+  "name": "moltworms",
+  "version": "0.1.0",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "lint": "echo 'add lint scripts'",
+    "test": "echo 'add tests'"
+  }
+}
