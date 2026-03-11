@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { initTRPC } from "@trpc/server";
-import { createExpressMiddleware } from "@trpc/server-adapters-express";
+import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { z } from "zod";
 import { loadConfig } from "./config.js";
 import { prisma } from "./db.js";
