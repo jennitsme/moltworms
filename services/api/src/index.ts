@@ -4,6 +4,7 @@ import { initTRPC } from "@trpc/server";
 import { createExpressMiddleware } from "@trpc/server-adapters-express";
 import { z } from "zod";
 import { loadConfig } from "./config.js";
+import { prisma } from "./db.js";
 
 const config = loadConfig();
 
@@ -13,6 +14,10 @@ const appRouter = t.router({
   echo: t.procedure.input(z.object({ message: z.string() })).query(({ input }) => ({
     message: input.message,
   })),
+  users: t.procedure.query(async () => {
+    const users = await prisma.user.findMany({ take: 5 });
+    return users;
+  }),
 });
 export type AppRouter = typeof appRouter;
 

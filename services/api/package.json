@@ -9,6 +9,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@prisma/client": "^5.15.1",
     "@trpc/server": "^11.0.0-rc.360",
     "@trpc/server-adapters": "^11.0.0-rc.360",
     "@trpc/server-adapters-express": "^11.0.0-rc.360",
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^22.3.0",
+    "prisma": "^5.15.1",
     "tsx": "^4.7.1",
     "typescript": "^5.4.5"
   }
