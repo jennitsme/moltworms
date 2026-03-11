@@ -3,7 +3,7 @@ import IORedis from "ioredis";
 import { loadWorkerConfig } from "./config.js";
 
 const config = loadWorkerConfig();
-const connection = new IORedis(config.redisUrl);
+const connection = new IORedis(config.redisUrl, { maxRetriesPerRequest: null });
 
 export const queues = {
   fetchChannel: new Queue("fetch-channel", { connection }),
