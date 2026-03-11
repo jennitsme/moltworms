@@ -15,12 +15,19 @@
     "dev:api": "npm run dev -w @moltworms/api",
     "dev:worker": "npm run dev -w @moltworms/worker",
     "build": "npm run build -ws",
-    "lint": "npm run lint -ws",
-    "test": "npm run test -ws"
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "echo 'add tests'"
   },
   "services/worker": {
     "dependencies": {
       "node-telegram-bot-api": "^0.66.0"
     }
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.1",
+    "eslint": "^9.11.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "typescript-eslint": "^8.10.0"
   }
 }

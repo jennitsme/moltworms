@@ -1,6 +1,7 @@
 import { loadWorkerConfig } from "./config.js";
 import { queues, createQueueWorker } from "./queues.js";
 import { getTelegramBot } from "./connectors/telegram.js";
+import { prisma } from "./db.js";
 
 const config = loadWorkerConfig();
 console.log(`[worker] ready (env=${config.env})`);
@@ -16,7 +17,23 @@ createQueueWorker("fetch-channel", async (job) => {
 
 createQueueWorker("process-message", async (job) => {
   console.log(`[worker] process-message job`, job.data);
-  // TODO: invoke OpenClaw agent / action suggestions
+  const msg = await prisma.message.findFirst({
+    where: { id: job.data.messageId.split("-")[1] },
+    include: { thread: true },
+  });
+  if (!msg) {
+    console.warn("[worker] message not found", job.data.messageId);
+    return;
+  }
+  // TODO: call agent to propose actions; for now create placeholder action
+  await prisma.action.create({
+    data: {
+      threadId: msg.threadId,
+      type: "suggest_reply",
+      payload: { suggestion: "Draft reply here" },
+      status: "pending",
+    },
+  });
 });
 
 createQueueWorker("execute-action", async (job) => {
