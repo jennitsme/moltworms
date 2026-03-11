@@ -1,0 +1,48 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: moltworms
+      POSTGRES_PASSWORD: moltworms
+      POSTGRES_DB: moltworms
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      CORS_ORIGINS: http://localhost:3000
+      POSTGRES_URL: postgres://moltworms:moltworms@postgres:5432/moltworms
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: services/worker/Dockerfile
+    environment:
+      NODE_ENV: development
+      POSTGRES_URL: postgres://moltworms:moltworms@postgres:5432/moltworms
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  pgdata:
