@@ -2,7 +2,9 @@
   "name": "moltworms",
   "version": "0.1.0",
   "private": true,
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "workspaces": [
     "apps/*",
     "services/*",
@@ -15,5 +17,10 @@
     "build": "npm run build -ws",
     "lint": "npm run lint -ws",
     "test": "npm run test -ws"
+  },
+  "services/worker": {
+    "dependencies": {
+      "node-telegram-bot-api": "^0.66.0"
+    }
   }
 }
