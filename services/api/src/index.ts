@@ -112,6 +112,25 @@ app.get("/health", (_, res) => {
   res.json({ status: "ok" });
 });
 
+// Simple REST helpers for web prototyping
+app.get("/threads", async (_, res) => {
+  const threads = await prisma.thread.findMany({
+    orderBy: { updatedAt: "desc" },
+    include: { channel: true },
+    take: 50,
+  });
+  res.json(threads);
+});
+
+app.get("/threads/:id/messages", async (req, res) => {
+  const { id } = req.params;
+  const messages = await prisma.message.findMany({
+    where: { threadId: id },
+    orderBy: { occurredAt: "asc" },
+  });
+  res.json(messages);
+});
+
 app.listen(config.port, () => {
   console.log(`[api] listening on port ${config.port} (env=${config.env})`);
 });

@@ -1,3 +1,5 @@
+import { fetchThreads, fetchMessages } from "../lib/api";
+
 async function getHealth() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
   try {
@@ -11,7 +13,9 @@ async function getHealth() {
 }
 
 export default async function HomePage() {
-  const health = await getHealth();
+  const [health, threads] = await Promise.all([getHealth(), fetchThreads()]);
+  const firstThread = threads[0];
+  const messages = firstThread ? await fetchMessages(firstThread.id) : [];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -24,13 +28,39 @@ export default async function HomePage() {
         )}
         <p style={{ color: "#444" }}>tRPC endpoint: /trpc</p>
       </div>
+
       <div style={{ padding: "1rem", border: "1px solid #e5e7eb", borderRadius: "0.75rem" }}>
-        <h3 style={{ fontSize: "1rem", fontWeight: 600 }}>Next Steps</h3>
-        <ul style={{ color: "#444", lineHeight: 1.6 }}>
-          <li>Wire API base URL via env; fetch healthcheck here.</li>
-          <li>Add auth (OAuth) and channel connectors.</li>
-          <li>Build inbox list and approval workflow UI.</li>
-        </ul>
+        <h3 style={{ fontSize: "1rem", fontWeight: 600 }}>Threads</h3>
+        {threads.length === 0 ? (
+          <p style={{ color: "#444" }}>Belum ada thread.</p>
+        ) : (
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            {threads.map((t: any) => (
+              <li key={t.id} style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "0.75rem" }}>
+                <div style={{ fontWeight: 600 }}>{t.subject || "(no subject)"}</div>
+                <div style={{ color: "#555" }}>{t.channel?.type} — {t.status}</div>
+                <div style={{ color: "#777", fontSize: "0.9rem" }}>Last updated: {new Date(t.updatedAt).toLocaleString()}</div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div style={{ padding: "1rem", border: "1px solid #e5e7eb", borderRadius: "0.75rem" }}>
+        <h3 style={{ fontSize: "1rem", fontWeight: 600 }}>Messages (first thread)</h3>
+        {firstThread ? (
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            {messages.map((m: any) => (
+              <li key={m.id} style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "0.75rem" }}>
+                <div style={{ fontWeight: 600 }}>{m.author || "(unknown)"} — {m.direction}</div>
+                <div style={{ whiteSpace: "pre-wrap" }}>{m.content}</div>
+                <div style={{ color: "#777", fontSize: "0.9rem" }}>{new Date(m.occurredAt).toLocaleString()}</div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p style={{ color: "#444" }}>Pilih thread untuk melihat pesan.</p>
+        )}
       </div>
     </div>
   );
