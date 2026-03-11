@@ -19,6 +19,73 @@ const appRouter = t.router({
     const users = await prisma.user.findMany({ take: 5 });
     return users;
   }),
+  threads: t.procedure
+    .input(z.object({ channelId: z.string().optional() }).optional())
+    .query(async ({ input }) => {
+      const threads = await prisma.thread.findMany({
+        where: input?.channelId ? { channelId: input.channelId } : undefined,
+        orderBy: { updatedAt: "desc" },
+        include: { channel: true },
+        take: 50,
+      });
+      return threads;
+    }),
+  messages: t.procedure
+    .input(z.object({ threadId: z.string() }))
+    .query(async ({ input }) => {
+      return prisma.message.findMany({
+        where: { threadId: input.threadId },
+        orderBy: { occurredAt: "asc" },
+      });
+    }),
+  actionCreate: t.procedure
+    .input(
+      z.object({
+        threadId: z.string(),
+        type: z.string(),
+        payload: z.any(),
+        userId: z.string(), // owner/approver for now
+      })
+    )
+    .mutation(async ({ input }) => {
+      const action = await prisma.action.create({
+        data: {
+          threadId: input.threadId,
+          type: input.type,
+          payload: input.payload,
+          status: "pending",
+        },
+      });
+      await prisma.approval.create({
+        data: {
+          actionId: action.id,
+          userId: input.userId,
+          status: "pending",
+        },
+      });
+      return action;
+    }),
+  approvalUpdate: t.procedure
+    .input(
+      z.object({
+        actionId: z.string(),
+        status: z.enum(["approved", "rejected"]),
+        note: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const updated = await prisma.approval.update({
+        where: { actionId: input.actionId },
+        data: { status: input.status, note: input.note },
+        include: { action: true },
+      });
+      // reflect status on action
+      await prisma.action.update({
+        where: { id: input.actionId },
+        data: { status: input.status },
+      });
+      return updated;
+    }),
   enqueueFetch: t.procedure
     .input(z.object({ channelId: z.string() }))
     .mutation(async ({ input }) => {
