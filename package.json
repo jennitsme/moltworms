@@ -9,7 +9,11 @@
     "packages/*"
   ],
   "scripts": {
-    "lint": "echo 'add lint scripts'",
-    "test": "echo 'add tests'"
+    "dev:web": "npm run dev -w @moltworms/web",
+    "dev:api": "npm run dev -w @moltworms/api",
+    "dev:worker": "npm run dev -w @moltworms/worker",
+    "build": "npm run build -ws",
+    "lint": "npm run lint -ws",
+    "test": "npm run test -ws"
   }
 }

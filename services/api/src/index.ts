@@ -3,6 +3,9 @@ import cors from "cors";
 import { initTRPC } from "@trpc/server";
 import { createExpressMiddleware } from "@trpc/server-adapters-express";
 import { z } from "zod";
+import { loadConfig } from "./config.js";
+
+const config = loadConfig();
 
 const t = initTRPC.create();
 const appRouter = t.router({
@@ -14,7 +17,8 @@ const appRouter = t.router({
 export type AppRouter = typeof appRouter;
 
 const app = express();
-app.use(cors());
+const corsOrigins = config.corsOrigins?.split(",").map((x) => x.trim()).filter(Boolean);
+app.use(cors({ origin: corsOrigins ?? true }));
 app.use(express.json());
 
 app.use(
@@ -29,7 +33,6 @@ app.get("/health", (_, res) => {
   res.json({ status: "ok" });
 });
 
-const port = process.env.PORT || 4000;
-app.listen(port, () => {
-  console.log(`[api] listening on port ${port}`);
+app.listen(config.port, () => {
+  console.log(`[api] listening on port ${config.port} (env=${config.env})`);
 });
